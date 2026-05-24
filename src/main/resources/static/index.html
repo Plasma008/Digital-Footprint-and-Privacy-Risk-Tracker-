@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Footprint &amp; Privacy Risk Checker</title>
+    <meta name="description"
+        content="AI-powered browser tracking and privacy risk analysis dashboard. Real-time digital footprint scoring using Naive Bayes classification and Shannon Entropy.">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+    <!-- ══ Animated Background ══ -->
+    <div class="bg-canvas" aria-hidden="true">
+        <div class="bg-grid"></div>
+        <div class="bg-orb bg-orb-1"></div>
+        <div class="bg-orb bg-orb-2"></div>
+        <div class="bg-orb bg-orb-3"></div>
+    </div>
+
+    <!-- ══ Sidebar Overlay (mobile) ══ -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- ══ App Layout ══ -->
+    <div class="layout">
+
+        <!-- ────────── SIDEBAR ────────── -->
+        <aside class="sidebar" id="sidebar" role="navigation" aria-label="Main navigation">
+
+            <div class="sidebar-logo">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                    </svg>
+                </div>
+                <div class="logo-text">
+                    <span class="logo-title">Privacy Risk<br>Checker</span>
+                    <span class="logo-sub">AI Digital Footprint</span>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-label">Navigation</div>
+
+                <button class="nav-item active" data-section="analysis" id="nav-analysis">
+                    <svg viewBox="0 0 24 24">
+                        <rect x="3" y="3" width="7" height="7" rx="1" />
+                        <rect x="14" y="3" width="7" height="7" rx="1" />
+                        <rect x="3" y="14" width="7" height="7" rx="1" />
+                        <rect x="14" y="14" width="7" height="7" rx="1" />
+                    </svg>
+                    Dashboard
+                </button>
+
+                <button class="nav-item" data-section="browser" id="nav-browser">
+                    <svg viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="2" y1="12" x2="22" y2="12" />
+                        <path
+                            d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                    </svg>
+                    Browser Scan
+                </button>
+
+                <button class="nav-item" data-section="results" id="nav-results">
+                    <svg viewBox="0 0 24 24">
+                        <path
+                            d="M9 19v-6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2zm0 0V9a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v10m-6 0a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2m0 0V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2z" />
+                    </svg>
+                    Risk Results
+                </button>
+
+                <button class="nav-item" data-section="history" id="nav-history">
+                    <svg viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10" />
+                        <polyline points="12 6 12 12 16 14" />
+                    </svg>
+                    History
+                </button>
+
+                <div class="nav-label">Tools</div>
+
+                <button class="nav-item"
+                    onclick="document.getElementById('username').focus(); window.scrollTo({top:0,behavior:'smooth'}); closeSidebar();">
+                    <svg viewBox="0 0 24 24">
+                        <circle cx="11" cy="11" r="8" />
+                        <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                    </svg>
+                    New Scan
+                </button>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="server-status">
+                    <div class="pulse-dot" id="serverDot"></div>
+                    <div class="status-info">
+                        <div class="status-label" id="serverLabel">Checking…</div>
+                        <div class="status-url">localhost:8080</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- ────────── MAIN ────────── -->
+        <div class="main">
+
+            <!-- Top Bar -->
+            <header class="topbar">
+                <div class="topbar-left">
+                    <h1 class="topbar-title">Digital Footprint &amp; Privacy Risk Checker</h1>
+                    <span class="topbar-sub">AI-Powered Privacy Exposure Analysis Tool</span>
+                </div>
+                <div class="topbar-right">
+                    <span class="topbar-badge" id="topbarBadge">● Checking…</span>
+                    <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">
+                        <svg viewBox="0 0 24 24">
+                            <line x1="3" y1="12" x2="21" y2="12" />
+                            <line x1="3" y1="6" x2="21" y2="6" />
+                            <line x1="3" y1="18" x2="21" y2="18" />
+                        </svg>
+                    </button>
+                </div>
+            </header>
+
+            <main class="page-content">
+
+                <!-- ── Stats Row ── -->
+                <div class="stats-row section-gap">
+                    <div class="stat-card">
+                        <div class="stat-icon-wrap si-blue">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                            </svg>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-value" id="statAnalysisCount">0</div>
+                            <div class="stat-label">Scans This Session</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon-wrap si-purple">
+                            <svg viewBox="0 0 24 24">
+                                <path
+                                    d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                                <line x1="12" y1="9" x2="12" y2="13" />
+                                <line x1="12" y1="17" x2="12.01" y2="17" />
+                            </svg>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-value" id="statActiveFactors">0</div>
+                            <div class="stat-label">Active Risk Factors</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon-wrap si-cyan">
+                            <svg viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="10" />
+                                <polyline points="12 6 12 12 16 14" />
+                            </svg>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-value" id="statLastScan">—</div>
+                            <div class="stat-label">Last Scan Time</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── Manual Analysis: 2-column Grid ── -->
+                <div class="grid-2 section-gap">
+
+                    <!-- User Parameters -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <span class="card-title-accent"></span>
+                                User Parameters
+                            </div>
+                            <div class="card-icon">
+                                <svg viewBox="0 0 24 24">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                                    <circle cx="12" cy="7" r="4" />
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label for="username" class="input-label">
+                                <svg viewBox="0 0 24 24">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                                    <circle cx="12" cy="7" r="4" />
+                                </svg>
+                                Username
+                            </label>
+                            <input type="text" id="username" class="input-field" placeholder="e.g. john_doe"
+                                autocomplete="off" spellcheck="false" />
+                        </div>
+                        <div class="input-group">
+                            <label for="primaryBrowser" class="input-label">
+                                <svg viewBox="0 0 24 24">
+                                    <circle cx="12" cy="12" r="10" />
+                                    <line x1="2" y1="12" x2="22" y2="12" />
+                                    <path
+                                        d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                                </svg>
+                                Primary Browser
+                            </label>
+                            <select id="primaryBrowser" class="input-field">
+                                <option value="Chrome">Google Chrome</option>
+                                <option value="Brave">Brave Browser (Privacy)</option>
+                                <option value="Firefox">Mozilla Firefox</option>
+                                <option value="Safari">Apple Safari</option>
+                                <option value="Edge">Microsoft Edge</option>
+                                <option value="Other">Other / Industrial</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="input-row">
+                        <div class="input-group">
+                            <label for="ageBracket" class="input-label">
+                                <svg viewBox="0 0 24 24">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                                    <circle cx="12" cy="7" r="4" />
+                                </svg>
+                                Age Bracket
+                            </label>
+                            <select id="ageBracket" class="input-field">
+                                <option value="18-25">18 – 25 Years</option>
+                                <option value="26-45">26 – 45 Years</option>
+                                <option value="46-60">46 – 60 Years</option>
+                                <option value="60+">60+ Years</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label for="socialMedia" class="input-label">
+                                <svg viewBox="0 0 24 24">
+                                    <circle cx="18" cy="5" r="3" />
+                                    <circle cx="6" cy="12" r="3" />
+                                    <circle cx="18" cy="19" r="3" />
+                                    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+                                    <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+                                </svg>
+                                Social Accounts
+                            </label>
+                            <input type="number" id="socialMedia" class="input-field" value="0" min="0" max="20" />
+                        </div>
+                    </div>
+
+                    <!-- Security Habits & Identity -->
+                    <div class="card section-gap">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <span class="card-title-accent"></span>
+                                Security Posture & Identity Protection
+                            </div>
+                            <div class="card-icon"
+                                style="background:rgba(168,85,247,0.1);border-color:rgba(168,85,247,0.2);">
+                                <svg viewBox="0 0 24 24" style="stroke:#c084fc">
+                                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="toggle-grid">
+                            <button class="toggle-card" id="h-vpn" aria-pressed="false">
+                                <div class="toggle-icon"><svg viewBox="0 0 24 24">
+                                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                                        <circle cx="12" cy="12" r="3" />
+                                    </svg></div>
+                                <div class="toggle-text"><span class="toggle-label">VPN Always-On</span><span
+                                        class="toggle-desc">Encrypts entry traffic</span></div>
+                                <div class="toggle-check"></div>
+                            </button>
+                            <button class="toggle-card" id="h-2fa" aria-pressed="false">
+                                <div class="toggle-icon"><svg viewBox="0 0 24 24">
+                                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                                        <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                                    </svg></div>
+                                <div class="toggle-text"><span class="toggle-label">2FA Enabled</span><span
+                                        class="toggle-desc">Multi-factor auth active</span></div>
+                                <div class="toggle-check"></div>
+                            </button>
+                            <button class="toggle-card" id="h-adblock" aria-pressed="false">
+                                <div class="toggle-icon"><svg viewBox="0 0 24 24">
+                                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                                        <line x1="8" y1="12" x2="16" y2="12" />
+                                    </svg></div>
+                                <div class="toggle-text"><span class="toggle-label">Adblocker Active</span><span
+                                        class="toggle-desc">Filters tracking scripts</span></div>
+                                <div class="toggle-check"></div>
+                            </button>
+                            <button class="toggle-card" id="h-passmgr" aria-pressed="false">
+                                <div class="toggle-icon"><svg viewBox="0 0 24 24">
+                                        <circle cx="12" cy="12" r="3" />
+                                        <path
+                                            d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+                                    </svg></div>
+                                <div class="toggle-text"><span class="toggle-label">Password Manager</span><span
+                                        class="toggle-desc">Unique complex keys</span></div>
+                                <div class="toggle-check"></div>
+                            </button>
+                            <button class="toggle-card" id="h-shared" aria-pressed="false">
+                                <div class="toggle-icon"><svg viewBox="0 0 24 24">
+                                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                                        <circle cx="9" cy="7" r="4" />
+                                        <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                                        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                                    </svg></div>
+                                <div class="toggle-text"><span class="toggle-label">Shared Device</span><span
+                                        class="toggle-desc">Public/Shared computer</span></div>
+                                <div class="toggle-check"></div>
+                            </button>
+                            <button class="toggle-card" id="h-leak" aria-pressed="false">
+                                <div class="toggle-icon"><svg viewBox="0 0 24 24">
+                                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+                                    </svg></div>
+                                <div class="toggle-text"><span class="toggle-label">Identity Leak</span><span
+                                        class="toggle-desc">Recent leak reported</span></div>
+                                <div class="toggle-check"></div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- ══ UNIFIED AI ACTION ══ -->
+                <div class="card section-gap" id="browserScanCard">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <span class="card-title-accent"></span>
+                            Unified AI Privacy Analysis
+                        </div>
+                        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+                            <span class="ai-tag">
+                                <svg viewBox="0 0 24 24">
+                                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+                                </svg>
+                                Unified AI Model
+                            </span>
+                            <span class="ext-status-badge" id="extStatusBadge">
+                                ● Detecting extension…
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="ext-install-notice" id="extInstallNotice" style="display:none">
+                        <svg viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="10" />
+                            <line x1="12" y1="8" x2="12" y2="12" />
+                            <line x1="12" y1="16" x2="12.01" y2="16" />
+                        </svg>
+                        <div class="ext-notice-text">
+                            <div class="ext-notice-title">Extension Not Detected</div>
+                            <div class="ext-notice-sub">Install the browser extension for high-accuracy behavioral
+                                signals.</div>
+                        </div>
+                    </div>
+
+                    <p style="font-size:13px;color:var(--text-muted);margin-bottom:20px;line-height:1.6">
+                        This advanced scan merges your <strong>self-reported lifestyle factors</strong> with
+                        <strong>real-time behavioral footprint</strong>.
+                        The AI cross-checks history patterns, tracker exposure, and entropy for a high-accuracy verdict.
+                    </p>
+
+                    <button class="btn-browser" id="browserScanBtn" onclick="runUnifiedAnalysis()">
+                        <svg viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="10" />
+                            <line x1="2" y1="12" x2="22" y2="12" />
+                            <path
+                                d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                        </svg>
+                        Run Unified Privacy Analysis
+                    </button>
+
+                    <div class="browser-progress" id="browserProgress">
+                        <div class="progress-label">
+                            <span class="spinner"></span>
+                            <span id="browserProgressLabel">Initializing Unified Model…</span>
+                        </div>
+                        <div class="progress-track">
+                            <div class="progress-fill" id="browserProgressBar"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ══ UNIFIED AI RESULT ══ -->
+                <div class="card section-gap" id="browserResult">
+                    <div class="card-header">
+                        <div class="card-title"><span class="card-title-accent"></span>Unified Privacy Risk Report</div>
+                        <span class="ai-tag">
+                            <svg viewBox="0 0 24 24">
+                                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+                            </svg>
+                            AI Behavioral Verdict
+                        </span>
+                    </div>
+
+                    <div class="result-grid scan-line-wrap" id="brScoreRow">
+                        <div class="ring-container">
+                            <svg width="120" height="120" viewBox="0 0 120 120">
+                                <circle class="r-track" cx="60" cy="60" r="50" />
+                                <circle class="r-fill" id="brFill" cx="60" cy="60" r="50" />
+                            </svg>
+                            <div class="ring-center">
+                                <span class="ring-num" id="brRingNum">0</span>
+                                <span class="ring-denom">/100</span>
+                            </div>
+                        </div>
+                        <div class="risk-meta">
+                            <div class="level-pill" id="brLevelPill">—</div>
+                            <div class="username-line" id="brUsername"></div>
+                            <div class="risk-msg" id="brRiskMsg"></div>
+                        </div>
+                    </div>
+
+                    <!-- AI Stats Row (Unified) -->
+                    <div class="br-stats">
+                        <div class="br-stat">
+                            <div class="br-stat-value" id="brStat-domains">—</div>
+                            <div class="br-stat-label">Unique Domains</div>
+                        </div>
+                        <div class="br-stat">
+                            <div class="br-stat-value" id="brStat-trackers">—</div>
+                            <div class="br-stat-label">Active Trackers</div>
+                        </div>
+                        <div class="br-stat">
+                            <div class="br-stat-value" id="brStat-insecure">—</div>
+                            <div class="br-stat-label">Insecure Sites</div>
+                        </div>
+                    </div>
+
+                    <div class="br-grid-2">
+                        <div class="br-sub-card">
+                            <div class="chart-section-title">Category Distribution</div>
+                            <div id="categoryChart"></div>
+                        </div>
+                        <div class="br-sub-card">
+                            <div class="br-sub-title">High-Exposure Sites</div>
+                            <div class="risky-domains-wrap" id="brRiskyDomains"></div>
+                        </div>
+                    </div>
+
+                    <div class="factors-heading">Unified Risk Factors (AI + Self-Reported)</div>
+                    <div id="brFactorsList"></div>
+
+                    <div class="factors-heading" style="margin-top:25px; color: #34d399;">Actionable Recommendations
+                    </div>
+                    <div id="brRecommendationsList"></div>
+                </div>
+
+                <!-- ══ HISTORY ══ -->
+                <div class="card" id="historySection">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <span class="card-title-accent"></span>
+                            <span id="historyTitle">Historical Records</span>
+                        </div>
+                        <div class="card-icon" style="background:rgba(6,182,212,0.1);border-color:rgba(6,182,212,0.2);">
+                            <svg viewBox="0 0 24 24" style="stroke:#22d3ee">
+                                <circle cx="12" cy="12" r="10" />
+                                <polyline points="12 6 12 12 16 14" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div style="overflow-x:auto">
+                        <table class="history-table">
+                            <thead>
+                                <tr>
+                                    <th>Username</th>
+                                    <th>Risk Score</th>
+                                    <th>Risk Level</th>
+                                    <th>Analyzed At</th>
+                                </tr>
+                            </thead>
+                            <tbody id="historyList"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- Toast container -->
+    <div class="toast-container" id="toastContainer" aria-live="polite"></div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

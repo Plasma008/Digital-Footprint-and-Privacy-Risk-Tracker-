@@ -1,0 +1,36 @@
+{
+  "manifest_version": 3,
+  "name": "Digital Footprint & Privacy Risk Checker",
+  "version": "1.0.0",
+  "description": "Tracks your browsing patterns and sends them to the Privacy Risk Checker dashboard for AI-powered risk analysis.",
+
+  "permissions": [
+    "history",
+    "topSites",
+    "tabs",
+    "storage",
+    "alarms"
+  ],
+
+  "host_permissions": [
+    "http://localhost:8080/*"
+  ],
+
+  "background": {
+    "service_worker": "background.js"
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["http://localhost:8080/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+
+  "action": {},
+
+  "externally_connectable": {
+    "matches": ["http://localhost:8080/*"]
+  }
+}
